@@ -13,6 +13,7 @@ import java.util.List;
 
 
 public class Lox {
+
     public String getGreeting() {
         return "Usage: lox [script]";
     }
@@ -20,7 +21,52 @@ public class Lox {
     public static void main(String[] args) throws IOException {
         Lox lox = new Lox();
         System.out.println("llooooooxxxxx");
-        System.out.println(lox.getGreeting());
+        if (args.length > 1) {
+            System.exit(64);
+            System.out.println(lox.getGreeting());
+        } else if (args.length == 1) {
+            runFile(args[0]);
+        } else {
+            runPrompt();
+        }
     }
+
+    private static void runFile(String path) throws IOException {
+        byte[] bytes = Files.readAllBytes(Paths.get(path));
+        run(new String(bytes, Charset.defaultCharset()));
+    }
+
+    private static void runPrompt() throws IOException {
+        InputStreamReader input = new InputStreamReader(System.in);
+        BufferedReader reader = new BufferedReader(input);
+
+        for (;;) {
+            System.out.print("[🍣] ");
+            String line = reader.readLine();
+            if (line == null) break;
+            run(line);
+        }
+    }
+
+    private static void run(String source) {
+        Scanner scanner = new Scanner(source);
+        List<Token> tokens = scanner.scanTokens();
+
+        for (Token token : tokens) {
+            System.out.println(token);
+        }
+    }
+
+    static boolean hadError = false;
+
+    static void error(int line, String message) {
+        report(line, "", message);
+    }
+
+    private static void report(int line, String where, String message) {
+        System.err.println(String.format("[line {}] Error{}: {}", line, where, message));
+        hadError = true;
+    }
+
 }
 
