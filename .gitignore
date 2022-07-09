@@ -6,3 +6,6 @@ build
 workspace
 
 app/bin
+*.classpath
+.settings/
+.project
